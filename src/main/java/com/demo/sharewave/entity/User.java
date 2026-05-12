@@ -1,5 +1,9 @@
 package com.demo.sharewave.entity;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,4 +34,18 @@ public class User {
     private Plan plan = Plan.FREE;
 
     public enum Plan { FREE, PAID }
+    
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime passwordExpiryDate;
+	private boolean firstTimeLogin;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime lastLoginTime;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime createdDate;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime modifiedDate;
+	
 }

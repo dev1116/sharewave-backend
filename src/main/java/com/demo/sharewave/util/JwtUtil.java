@@ -6,6 +6,7 @@ import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
@@ -16,7 +17,10 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtil {
 
     // Yeh secret key hai — kisi ko mat batana!
-    private String secret = "sharewave_secret_key_minimum_32_chars";
+	
+	@Value("${jwt.secret}")
+	private String secret;
+//    private String secret = "sharewave_secret_key_minimum_32_chars";
 
     // Token banao
     public String generateToken(String email) {

@@ -1,5 +1,7 @@
 package com.demo.sharewave.config;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.demo.sharewave.util.JwtUtil;
 
-import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,29 +24,46 @@ public class JwtFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
-                                    throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain)
+            throws ServletException, IOException {
 
-        // Header se token nikalo
-        String authHeader = request.getHeader("Authorization");
+        String path = request.getServletPath();
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7); // "Bearer " hata do
+        // skip auth APIs
+        if (path.startsWith("/api/auth")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        String authHeader =
+                request.getHeader("Authorization");
+
+        if (authHeader != null &&
+                authHeader.startsWith("Bearer ")) {
+
+            String token = authHeader.substring(7);
 
             if (jwtUtil.isTokenValid(token)) {
-                String email = jwtUtil.extractEmail(token);
 
-                // Spring Security ko batao — yeh user valid hai
+                String email =
+                        jwtUtil.extractEmail(token);
+
                 UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
-                        email, null, new ArrayList<>()
-                    );
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                        new UsernamePasswordAuthenticationToken(
+                                email,
+                                null,
+                                new ArrayList<>()
+                        );
+
+                SecurityContextHolder
+                        .getContext()
+                        .setAuthentication(auth);
             }
         }
 
-        chain.doFilter(request, response); // aage bhejo request
+        chain.doFilter(request, response);
     }
 }
