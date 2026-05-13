@@ -33,6 +33,8 @@ public class User {
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime lastLoginAt;
+    
+    private Boolean firstTimeLogin = true; // ← Default value
 
     public enum Plan { FREE, PAID, B2B }
     public enum Status { ACTIVE, SUSPENDED, DELETED }
