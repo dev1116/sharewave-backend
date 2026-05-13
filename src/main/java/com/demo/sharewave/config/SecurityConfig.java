@@ -47,26 +47,27 @@ public class SecurityConfig {
             );
 
         return http.build();
-    }
-    @Bean
+    }@Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "https://your-frontend-domain.vercel.app"
+        config.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*",        // ← Flutter local sabhi ports
+            "https://*.netlify.app",     // ← Netlify baad mein
+            "https://*.railway.app"      // ← Railway
         ));
 
         config.setAllowedMethods(Arrays.asList(
-            "GET", "POST", "PUT", "DELETE", "OPTIONS"
+            "GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"
         ));
 
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(true);
+        config.setExposedHeaders(Arrays.asList("Authorization"));
+        config.setAllowCredentials(false);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
-
         source.registerCorsConfiguration("/**", config);
 
         return source;
