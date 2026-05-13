@@ -10,6 +10,6 @@ public class ReceivedFileResponse {
     private String fileName;
     private Long fileSize;
     private String fileType;
-    private String senderEmail;
+    private String otherPartyEmail;  // sender ya receiver
     private String status;
 }

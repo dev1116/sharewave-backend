@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.demo.sharewave.service.TransferService;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.FileSystemResource;
+import java.nio.file.Files;
 
 @RestController
 @RequestMapping("/api/transfer")
@@ -67,26 +70,33 @@ public class TransferController {
             @PathVariable String roomId,
             Authentication auth) {
         try {
-            // Debug ke liye
-            System.out.println("Auth: " + auth);
-            System.out.println("RoomId: " + roomId);
-            
             String receiverEmail = auth.getName();
-            System.out.println("Receiver Email: " + receiverEmail);
-            
             Path filePath = transferService.getFile(roomId, receiverEmail);
-            byte[] data = Files.readAllBytes(filePath);
+
+            Resource resource = new FileSystemResource(filePath);
 
             return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" +
                     filePath.getFileName().toString() + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .contentLength(data.length)
-                .body(new ByteArrayResource(data));
+                .contentLength(Files.size(filePath))
+                .body(resource);
 
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+ // Sender ki sent files
+    @GetMapping("/sent-files")
+    public ResponseEntity<?> sentFiles(Authentication auth) {
+        try {
+            String email = auth.getName();
+            return ResponseEntity.ok(
+                transferService.getSentFiles(email)
+            );
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

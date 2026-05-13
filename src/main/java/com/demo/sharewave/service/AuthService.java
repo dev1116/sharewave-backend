@@ -49,6 +49,7 @@ public class AuthService {
         user.setUsername(req.getUsername());
         user.setEmail(req.getEmail());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
+        
         userRepo.save(user);
 
         String token = jwtUtil.generateToken(user.getEmail());
@@ -83,6 +84,7 @@ public class AuthService {
             throw new UnauthorizedException("Wrong password!");
 
         // Last login update
+        
         user.setLastLoginAt(LocalDateTime.now());
         userRepo.save(user);
 

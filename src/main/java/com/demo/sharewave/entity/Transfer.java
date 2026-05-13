@@ -37,6 +37,11 @@ public class Transfer {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum Status {
-        PENDING, ACTIVE, DONE, FAILED
+        PENDING, ACTIVE, DONE, FAILED , DOWNLOADED
     }
+    
+    private Integer downloadCount = 0;
+    private LocalDateTime downloadedAt;
+    private LocalDateTime expiresAt;
+    private Boolean notificationSent = false;
 }

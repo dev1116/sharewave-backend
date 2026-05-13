@@ -2,6 +2,7 @@ package com.demo.sharewave.service;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.demo.sharewave.dto.ReceivedFileResponse;
 import com.demo.sharewave.entity.Transfer;
 import com.demo.sharewave.entity.User;
+import com.demo.sharewave.exception.NotFoundException;
+import com.demo.sharewave.exception.UnauthorizedException;
 import com.demo.sharewave.repository.TransferRepository;
 import com.demo.sharewave.repository.UserRepository;
 
@@ -128,19 +131,43 @@ public class TransferService {
     
     public Path getFile(String roomId, String receiverEmail) throws IOException {
         Transfer transfer = transferRepo.findByRoomId(roomId);
-        
-        if (transfer == null) {
-            throw new RuntimeException("Room not found!");
-        }
 
-        // Sirf receiver download kar sake
-        if (!transfer.getReceiverEmail().equals(receiverEmail)) {
-            throw new RuntimeException("Access denied!");
-        }
+        if (transfer == null)
+            throw new NotFoundException("Room not found!");
+
+        if (!transfer.getReceiverEmail().equals(receiverEmail))
+            throw new UnauthorizedException("Access denied!");
+
+        // Download count update karo
+        transfer.setDownloadCount(transfer.getDownloadCount() + 1);
+        transfer.setDownloadedAt(LocalDateTime.now());
+        transfer.setStatus(Transfer.Status.DOWNLOADED);
+        transferRepo.save(transfer);
 
         return fileStorageService.getFilePath(
             roomId,
             transfer.getFileName()
         );
+    }
+    
+    public List<ReceivedFileResponse> getSentFiles(String senderEmail) {
+        Optional<User> senderOpt = userRepo.findByEmail(senderEmail);
+        if (senderOpt.isEmpty()) {
+            throw new NotFoundException("User not found!");
+        }
+
+        List<Transfer> transfers = transferRepo
+            .findBySender(senderOpt.get());
+
+        return transfers.stream()
+            .map(t -> new ReceivedFileResponse(
+                t.getRoomId(),
+                t.getFileName(),
+                t.getFileSize(),
+                t.getFileType(),
+                t.getReceiverEmail(),
+                t.getStatus().toString()
+            ))
+            .collect(Collectors.toList());
     }
 }
