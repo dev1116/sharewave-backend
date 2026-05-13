@@ -1,4 +1,4 @@
-package com.demo.sharewave.exceptions;
+package com.demo.sharewave.exception;
 
 public class ResourceNotFoundException extends RuntimeException{
 

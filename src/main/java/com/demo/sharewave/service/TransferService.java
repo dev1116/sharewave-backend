@@ -40,6 +40,15 @@ public class TransferService {
         if (senderOpt.isEmpty()) {
             throw new RuntimeException("Sender not found!");
         }
+     // Storage limit check
+        User sender = senderOpt.get();
+        long newStorageUsed = sender.getStorageUsed() + chunk.getSize();
+        if (newStorageUsed > sender.getStorageLimit()) {
+            throw new RuntimeException(
+                "Storage limit exceeded! Upgrade to paid plan.");
+        }
+        sender.setStorageUsed(newStorageUsed);
+        userRepo.save(sender);
 
         // 2. File info automatically lo
         String fileName = chunk.getOriginalFilename();

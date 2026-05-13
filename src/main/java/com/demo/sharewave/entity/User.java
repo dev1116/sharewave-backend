@@ -1,18 +1,8 @@
 package com.demo.sharewave.entity;
 
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -23,29 +13,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Column(unique = true, nullable = false)
+    private String username;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Plan plan = Plan.FREE;
 
-    public enum Plan { FREE, PAID }
-    
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime passwordExpiryDate;
-	private boolean firstTimeLogin;
-	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime lastLoginTime;
-	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime createdDate;
-	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime modifiedDate;
-	
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
+
+    private Long storageUsed = 0L;
+    private Long storageLimit = 2147483648L; // 2GB
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime lastLoginAt;
+
+    public enum Plan { FREE, PAID, B2B }
+    public enum Status { ACTIVE, SUSPENDED, DELETED }
 }

@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.demo.sharewave.entity.User;
-import com.demo.sharewave.exceptions.ResourceNotFoundException;
+import com.demo.sharewave.exception.ResourceNotFoundException;
 import com.demo.sharewave.repository.UserRepository;
 
 @Service
