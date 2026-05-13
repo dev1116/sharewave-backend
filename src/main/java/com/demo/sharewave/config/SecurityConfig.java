@@ -54,7 +54,8 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:*",        // ← Flutter local sabhi ports
             "https://*.netlify.app",     // ← Netlify baad mein
-            "https://*.railway.app"      // ← Railway
+            "https://*.railway.app",      // ← Railway
+            "https://dev1116.github.io" 
         ));
 
         config.setAllowedMethods(Arrays.asList(
